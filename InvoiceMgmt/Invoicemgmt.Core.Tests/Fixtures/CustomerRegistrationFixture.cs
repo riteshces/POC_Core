@@ -8,10 +8,11 @@ namespace Invoicemgmt.Core.Fixtures
 {
     public static class CustomerRegistrationFixture
     {
-        public static CustomerRegistration GetCustomerData()
+        public static CustomerRegistrationRequest GetCustomerData()
         {
-            return new CustomerRegistration
+            return new CustomerRegistrationRequest
             {
+
                 FullName = "Test",
                 ContactNo = "1234567890",
                 AltContactNo = "1234567890",

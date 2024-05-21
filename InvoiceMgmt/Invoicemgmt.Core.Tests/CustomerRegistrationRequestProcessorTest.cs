@@ -23,14 +23,14 @@ namespace Invoicemgmt.Core
 
 
             //Assert
-            Assert.NotNull(response);
-            Assert.Equal(request.FullName, response.FullName);
-            Assert.Equal(request.Address, response.Address);
-            Assert.Equal(request.AltContactNo, response.AltContactNo);
-            Assert.Equal(request.City, response.City);
-            Assert.Equal(request.ContactNo, response.ContactNo);
-            Assert.Equal(request.Country, response.Country);
-            Assert.Equal(request.Pincode, response.Pincode);
+            response.Should().NotBeNull();
+            response.Address.Equals(request.Address);
+            response.FullName.Equals(request.FullName);
+            response.AltContactNo.Equals(request.AltContactNo);
+            response.City.Equals(request.City);
+            response.ContactNo.Equals(request.ContactNo);
+            response.Country.Equals(request.Country);
+            response.Pincode.Equals(request.Pincode);
         }
     }
 }

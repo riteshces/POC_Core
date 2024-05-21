@@ -1,7 +1,10 @@
-﻿namespace Invoicemgmt.Core
+﻿using Newtonsoft.Json.Bson;
+
+namespace Invoicemgmt.Core
 {
-    public class CustomerRegistration
+    public class CustomerRegistrationRequest
     {
+        public Guid Id { get; set; }
         public string FullName { get; set; }
         public string ContactNo { get; set; }
         public string AltContactNo { get; set; }

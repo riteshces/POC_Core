@@ -7,7 +7,7 @@ namespace Invoicemgmt.Core
         {
         }
 
-        public CustomerRegistrationResponse AddCustomer(CustomerRegistration request)
+        public CustomerRegistrationResponse AddCustomer(CustomerRegistrationRequest request)
         {
           return new CustomerRegistrationResponse
             {
