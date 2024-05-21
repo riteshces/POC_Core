@@ -24,13 +24,14 @@ namespace Invoicemgmt.Core
 
             //Assert
             response.Should().NotBeNull();
+
             response.Address.Equals(request.Address);
             response.FullName.Equals(request.FullName);
             response.AltContactNo.Equals(request.AltContactNo);
-            response.City.Equals(request.City);
+            response.Address.City.Equals(request.Address.City);
             response.ContactNo.Equals(request.ContactNo);
-            response.Country.Equals(request.Country);
-            response.Pincode.Equals(request.Pincode);
+            response.Address.Country.Equals(request.Address.Country);
+            response.Address.Pincode.Equals(request.Address.Pincode);
         }
     }
 }

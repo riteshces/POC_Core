@@ -12,14 +12,10 @@ namespace Invoicemgmt.Core.Fixtures
         {
             return new CustomerRegistrationRequest
             {
-
                 FullName = "Test",
-                ContactNo = "1234567890",
-                AltContactNo = "1234567890",
-                Address = "Test",
-                Pincode = "123456",
-                City = "Test",
-                Country = "Test"
+                ContactNo = 1234567890,
+                AltContactNo = 1234567890,
+                Address = new CustomerAddress { Address = "testing", City = "test", Country = "test", Pincode = 123456 }
             };
         }
     }
