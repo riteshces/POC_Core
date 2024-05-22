@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Invoicemgmt.Core.Models.Customer;
+using Invoicemgmt.Domain.BaseModels;
 
 namespace Invoicemgmt.Core.Fixtures
 {
@@ -13,8 +10,8 @@ namespace Invoicemgmt.Core.Fixtures
             return new CustomerRegistrationRequest
             {
                 FullName = "Test",
-                ContactNo = 1234567890,
-                AltContactNo = 1234567890,
+                ContactNo = "1234567890",
+                AltContactNo = "1234567890",
                 Address = new CustomerAddress { Address = "testing", City = "test", Country = "test", Pincode = 123456 }
             };
         }
