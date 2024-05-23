@@ -9,6 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Invoicemgmt.Core", "Invoice
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Invoicemgmt.Domain", "Invoicemgmt.Domain\Invoicemgmt.Domain.csproj", "{75F5DD16-3E52-4448-969B-A30719177A86}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invoicemgmt.Infra", "Invoicemgmt.Infra\Invoicemgmt.Infra.csproj", "{874B43D5-9E75-4546-95DA-93183254EC7B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invoicemgmt.Infra.Tests", "Invoicemgmt.Infra.Tests\Invoicemgmt.Infra.Tests.csproj", "{24958ECA-E821-4513-BB88-2B4CF99749B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{75F5DD16-3E52-4448-969B-A30719177A86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75F5DD16-3E52-4448-969B-A30719177A86}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75F5DD16-3E52-4448-969B-A30719177A86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{874B43D5-9E75-4546-95DA-93183254EC7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{874B43D5-9E75-4546-95DA-93183254EC7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{874B43D5-9E75-4546-95DA-93183254EC7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{874B43D5-9E75-4546-95DA-93183254EC7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24958ECA-E821-4513-BB88-2B4CF99749B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24958ECA-E821-4513-BB88-2B4CF99749B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24958ECA-E821-4513-BB88-2B4CF99749B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24958ECA-E821-4513-BB88-2B4CF99749B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

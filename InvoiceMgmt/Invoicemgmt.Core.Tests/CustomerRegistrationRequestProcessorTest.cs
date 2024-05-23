@@ -3,7 +3,7 @@ using Invoicemgmt.Core.Enums;
 using Invoicemgmt.Core.Fixtures;
 using Invoicemgmt.Core.Interfaces;
 using Invoicemgmt.Core.Models.Customer;
-using Invoicemgmt.Core.Repository;
+using Invoicemgmt.Core.Services;
 using Invoicemgmt.Domain;
 using Moq;
 
@@ -13,7 +13,7 @@ namespace Invoicemgmt.Core
     {
         private readonly CustomerRegistrationRepository _processor;
         private readonly CustomerRegistrationRequest _request;
-        private readonly Mock<ICustomerRegistration> _mock;
+        private readonly Mock<ICustomerRegistrationService> _mock;
         private readonly List<CustomerRegistration> _customerRegistrations;
 
         public CustomerRegistrationRequestProcessorTest()
@@ -24,16 +24,17 @@ namespace Invoicemgmt.Core
             _request = CustomerRegistrationFixture.GetCustomerData();
 
             //Initialize the customer list
-            _customerRegistrations = new List<CustomerRegistration>() { new CustomerRegistration { ContactNo= "1234567890" } };
+            _customerRegistrations = new List<CustomerRegistration>() { new CustomerRegistration { ContactNo = "1234567890" } };
 
             //generating mock request from Customer Service Interface
-            _mock = new Mock<ICustomerRegistration>();
+            _mock = new Mock<ICustomerRegistrationService>();
 
 
             //process
             _processor = new CustomerRegistrationRepository(_mock.Object);
         }
 
+        #region Save Customer
         [Fact]
         public void Should_Return_Customer_Registration_Response_With_Request_Values()
         {
@@ -103,7 +104,7 @@ namespace Invoicemgmt.Core
         }
 
         [Theory]
-        [InlineData(ResultFlag.Failure,false)]
+        [InlineData(ResultFlag.Failure, false)]
         [InlineData(ResultFlag.Success, true)]
         public void Should_Return_SuccessOrFailure_Flag_In_Result(ResultFlag resultFlag, bool isCustomerAvailable)
         {
@@ -120,5 +121,94 @@ namespace Invoicemgmt.Core
             //Assert
             resultFlag.Should().Be(result.ResultFlag);
         }
+        #endregion
+
+        #region Update Customer
+
+        [Fact]
+        public void OnUpdate_Should_Return_Request_Same_As_Response()
+        {
+            //Arrange
+            CustomerRegistrationUpdateRequest customerRegistrationUpdateRequest = CustomerRegistrationFixture.GetCustomerUpdateData();
+
+            //Act
+            CustomerRegistrationResponse customerRegistrationResponse = _processor.UpdateCustomer(customerRegistrationUpdateRequest.Id, customerRegistrationUpdateRequest);
+
+            //Assert
+
+            customerRegistrationResponse.Should().NotBeNull();
+            customerRegistrationResponse.Id.Should().Be(customerRegistrationUpdateRequest.Id);
+        }
+
+        #endregion
+
+        #region Get Customers List
+
+        [Fact]
+        public void OnSuccess_Should_Return_If_Found_CustomerList()
+        {
+            //Arrange
+            List<CustomerRegistration> customerRegistrations = CustomerRegistrationFixture.GetCustomersList();
+            _mock.Setup(q => q.GetCustomers()).Returns(customerRegistrations);
+
+            //Act
+            List<CustomerRegistration> customers = _processor.GetCustomers();
+
+            //Assert
+            customers.Should().NotBeNull();
+            customers.Count().Should().BeGreaterThan(0);
+        }
+
+        [Fact]
+        public void OnFailure_Should_Return_Blank_CustomerList_When_Customers_Not_Exists()
+        {
+            //Arrange
+            List<CustomerRegistration> customerRegistrations = new List<CustomerRegistration>();
+            _mock.Setup(q => q.GetCustomers()).Returns(customerRegistrations);
+
+            //Act
+            List<CustomerRegistration> customers = _processor.GetCustomers();
+
+            //Assert
+            customers.Should().NotBeNull();
+            customers.Count().Should().Be(0);
+        }
+
+        #endregion
+
+        #region Get Customer By Id
+
+        [Fact]
+        public void OnSuccess_Should_Return_Customer()
+        {
+            //Arrange
+            var customerid = "1";
+            CustomerRegistration customerRegistrations = CustomerRegistrationFixture.GetCustomerRegistration();
+            _mock.Setup(q => q.GetCustomerById(customerid)).Returns(customerRegistrations);
+
+            //Act
+            CustomerRegistration customer = _processor.GetCustomerById(customerid);
+
+            //Assert
+            customer.Should().NotBeNull();
+            customer.Id.Should().BeEquivalentTo(customerid);
+        }
+
+        [Fact]
+        public void OnFailure_Should_Return_Blank_Customer_When_Customers_Not_Found()
+        {
+            //Arrange
+            var customerid = "3";
+            CustomerRegistration customerRegistrations = CustomerRegistrationFixture.GetCustomerRegistration();
+            _mock.Setup(q => q.GetCustomerById(customerid)).Returns(customerRegistrations);
+
+            //Act
+            CustomerRegistration customer = _processor.GetCustomerById(customerid);
+
+            //Assert
+            customer.Should().NotBeNull();
+        }
+
+        #endregion
     }
 }
