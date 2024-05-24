@@ -11,9 +11,7 @@ namespace Invoicemgmt.Domain.BaseModels
 {
     public abstract class CustomerRegistrationBase
     {
-        [BsonId]
-        [BsonElement("_id"), BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        
         public string FullName { get; set; }
         public string ContactNo { get; set; }
         public string AltContactNo { get; set; }

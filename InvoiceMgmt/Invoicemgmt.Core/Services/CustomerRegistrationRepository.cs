@@ -56,7 +56,7 @@ namespace Invoicemgmt.Core.Services
         public CustomerRegistrationResponse UpdateCustomer(string Id, CustomerRegistrationUpdateRequest customerRegistrationUpdateRequest)
         {
             _customerRegistration.UpdateCustomer(Id, customerRegistrationUpdateRequest);
-            var result = CreateCustomerRegistrationRequest<CustomerRegistrationResponse>(customerRegistrationUpdateRequest);
+            var result = UpdateCustomerRegistrationRequest<CustomerRegistrationResponse>(customerRegistrationUpdateRequest);
             return result;
         }
 
@@ -65,7 +65,7 @@ namespace Invoicemgmt.Core.Services
         {
             return new TCustomerRegistration
             {
-                Id = customerRegistrationBase.Id,
+                //Id = customerRegistrationBase.Id,
                 FullName = customerRegistrationBase.FullName,
                 ContactNo = customerRegistrationBase.ContactNo,
                 AltContactNo = customerRegistrationBase.AltContactNo,
@@ -75,6 +75,25 @@ namespace Invoicemgmt.Core.Services
                     City = customerRegistrationBase.Address.City,
                     Country = customerRegistrationBase.Address.Country,
                     Pincode = customerRegistrationBase.Address.Pincode,
+                }
+            };
+        }
+
+
+        private TCustomerRegistration UpdateCustomerRegistrationRequest<TCustomerRegistration>(CustomerRegistrationUpdateRequest customerRegistration) where TCustomerRegistration : CustomerRegistrationResponse, new()
+        {
+            return new TCustomerRegistration
+            {
+                Id = customerRegistration.Id,
+                FullName = customerRegistration.FullName,
+                ContactNo = customerRegistration.ContactNo,
+                AltContactNo = customerRegistration.AltContactNo,
+                Address = new CustomerAddress
+                {
+                    Address = customerRegistration.Address.Address,
+                    City = customerRegistration.Address.City,
+                    Country = customerRegistration.Address.Country,
+                    Pincode = customerRegistration.Address.Pincode,
                 }
             };
         }

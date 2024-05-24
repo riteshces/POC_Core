@@ -43,14 +43,7 @@ namespace Invoicemgmt.Core
 
             //Assert
             response.Should().NotBeNull();
-
-            response.Address.Equals(_request.Address);
-            response.FullName.Equals(_request.FullName);
-            response.AltContactNo.Equals(_request.AltContactNo);
-            response.Address.City.Equals(_request.Address.City);
-            response.ContactNo.Equals(_request.ContactNo);
-            response.Address.Country.Equals(_request.Address.Country);
-            response.Address.Pincode.Equals(_request.Address.Pincode);
+            response.Should().BeEquivalentTo(_request);
         }
 
         [Fact]
@@ -80,14 +73,7 @@ namespace Invoicemgmt.Core
 
             //Assert
             savedCustomerRegistration.Should().NotBeNull();
-
-            savedCustomerRegistration?.Address.Equals(_request.Address);
-            savedCustomerRegistration?.FullName.Equals(_request.FullName);
-            savedCustomerRegistration?.AltContactNo.Equals(_request.AltContactNo);
-            savedCustomerRegistration?.Address.City.Equals(_request.Address.City);
-            savedCustomerRegistration?.ContactNo.Equals(_request.ContactNo);
-            savedCustomerRegistration?.Address.Country.Equals(_request.Address.Country);
-            savedCustomerRegistration?.Address.Pincode.Equals(_request.Address.Pincode);
+            savedCustomerRegistration.Should().BeEquivalentTo(_request);
         }
 
         [Fact]
@@ -182,8 +168,9 @@ namespace Invoicemgmt.Core
         public void OnSuccess_Should_Return_Customer()
         {
             //Arrange
-            var customerid = "1";
+           
             CustomerRegistration customerRegistrations = CustomerRegistrationFixture.GetCustomerRegistration();
+            var customerid=customerRegistrations.Id;
             _mock.Setup(q => q.GetCustomerById(customerid)).Returns(customerRegistrations);
 
             //Act

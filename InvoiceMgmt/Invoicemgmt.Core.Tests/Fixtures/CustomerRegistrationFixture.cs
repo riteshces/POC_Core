@@ -1,4 +1,4 @@
-﻿using Castle.Core.Resource;
+﻿using AutoFixture;
 using Invoicemgmt.Core.Models.Customer;
 using Invoicemgmt.Domain;
 using Invoicemgmt.Domain.BaseModels;
@@ -9,59 +9,67 @@ namespace Invoicemgmt.Core.Fixtures
     {
         public static CustomerRegistrationRequest GetCustomerData()
         {
-            return new CustomerRegistrationRequest
-            {
-                FullName = "Test",
-                ContactNo = "1234567890",
-                AltContactNo = "1234567890",
-                Address = new CustomerAddress { Address = "testing", City = "test", Country = "test", Pincode = 123456 }
-            };
+            Fixture fixture = new Fixture();
+            return fixture.Create<CustomerRegistrationRequest>();
         }
 
 
         public static CustomerRegistration GetCustomerRegistration()
         {
-            return new CustomerRegistration
-            {
-                Id="1",
-                FullName = "Test",
-                ContactNo = "1234567890",
-                AltContactNo = "1234567890",
-                Address = new CustomerAddress { Address = "testing", City = "test", Country = "test", Pincode = 123456 }
-            };
+            Fixture fixture = new Fixture();
+            return fixture.Create<CustomerRegistration>();
+
+            //return new CustomerRegistration
+            //{
+            //    Id="1",
+            //    FullName = "Test",
+            //    ContactNo = "1234567890",
+            //    AltContactNo = "1234567890",
+            //    Address = new CustomerAddress { Address = "testing", City = "test", Country = "test", Pincode = 123456 }
+            //};
         }
 
 
-        public static List<CustomerRegistration> GetCustomersList() => new()
-        {
-           new CustomerRegistration
-            {
-                   Id="1",
-                FullName = "Test",
-                ContactNo = "1234567890",
-                AltContactNo = "1234567890",
-                Address = new CustomerAddress { Address = "testing", City = "test", Country = "test", Pincode = 123456 }
-            },
-           new CustomerRegistration
-            {
-                   Id="2",
-                FullName = "Test",
-                ContactNo = "1234567890",
-                AltContactNo = "1234567890",
-                Address = new CustomerAddress { Address = "testing", City = "test", Country = "test", Pincode = 123456 }
-            },
-           new CustomerRegistration
-            {
-                   Id="3",
-                FullName = "Test",
-                ContactNo = "1234567890",
-                AltContactNo = "1234567890",
-                Address = new CustomerAddress { Address = "testing", City = "test", Country = "test", Pincode = 123456 }
-            }
-           };
+        //public static List<CustomerRegistration> GetCustomersList() => new()
+        //{
+        //   new CustomerRegistration
+        //    {
+        //           Id="1",
+        //        FullName = "Test",
+        //        ContactNo = "1234567890",
+        //        AltContactNo = "1234567890",
+        //        Address = new CustomerAddress { Address = "testing", City = "test", Country = "test", Pincode = 123456 }
+        //    },
+        //   new CustomerRegistration
+        //    {
+        //           Id="2",
+        //        FullName = "Test",
+        //        ContactNo = "1234567890",
+        //        AltContactNo = "1234567890",
+        //        Address = new CustomerAddress { Address = "testing", City = "test", Country = "test", Pincode = 123456 }
+        //    },
+        //   new CustomerRegistration
+        //    {
+        //           Id="3",
+        //        FullName = "Test",
+        //        ContactNo = "1234567890",
+        //        AltContactNo = "1234567890",
+        //        Address = new CustomerAddress { Address = "testing", City = "test", Country = "test", Pincode = 123456 }
+        //    }
+        //   };
 
+
+        public static List<CustomerRegistration> GetCustomersList()
+        {
+            Fixture fixture = new Fixture();
+            return fixture.CreateMany<CustomerRegistration>(10).ToList();
+        }
         public static CustomerRegistrationUpdateRequest GetCustomerUpdateData()
         {
+            Fixture fixture = new Fixture();
+            return fixture.Build<CustomerRegistrationUpdateRequest>().With(c => c.Id, "664f28655109e7d5f39ddc5d").Create();
+
+
             return new CustomerRegistrationUpdateRequest
             {
                 Id = "664f28655109e7d5f39ddc5d",

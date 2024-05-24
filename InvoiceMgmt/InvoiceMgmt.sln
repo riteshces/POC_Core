@@ -9,9 +9,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Invoicemgmt.Core", "Invoice
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Invoicemgmt.Domain", "Invoicemgmt.Domain\Invoicemgmt.Domain.csproj", "{75F5DD16-3E52-4448-969B-A30719177A86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invoicemgmt.Infra", "Invoicemgmt.Infra\Invoicemgmt.Infra.csproj", "{874B43D5-9E75-4546-95DA-93183254EC7B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Invoicemgmt.Infra", "Invoicemgmt.Infra\Invoicemgmt.Infra.csproj", "{874B43D5-9E75-4546-95DA-93183254EC7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invoicemgmt.Infra.Tests", "Invoicemgmt.Infra.Tests\Invoicemgmt.Infra.Tests.csproj", "{24958ECA-E821-4513-BB88-2B4CF99749B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Invoicemgmt.Infra.Tests", "Invoicemgmt.Infra.Tests\Invoicemgmt.Infra.Tests.csproj", "{24958ECA-E821-4513-BB88-2B4CF99749B8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{464DACF9-CB4E-4ED0-AE4E-7FF71FD36D81}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{1C6E7399-E8FF-4EEC-A6EF-7B44B1080FBA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,6 +46,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F52008CE-DECF-4B34-A970-E69B5CB97BD2} = {1C6E7399-E8FF-4EEC-A6EF-7B44B1080FBA}
+		{E0B1BE3D-7443-4091-A4FB-348E4AF1BB54} = {464DACF9-CB4E-4ED0-AE4E-7FF71FD36D81}
+		{75F5DD16-3E52-4448-969B-A30719177A86} = {464DACF9-CB4E-4ED0-AE4E-7FF71FD36D81}
+		{874B43D5-9E75-4546-95DA-93183254EC7B} = {464DACF9-CB4E-4ED0-AE4E-7FF71FD36D81}
+		{24958ECA-E821-4513-BB88-2B4CF99749B8} = {1C6E7399-E8FF-4EEC-A6EF-7B44B1080FBA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {13D0FD29-5BC9-4E7E-8A96-E27C4CDFC1CF}
