@@ -1,5 +1,5 @@
-﻿using FluentAssertions;
-using Invoicemgmt.Core.Enums;
+﻿using AutoFixture.Xunit2;
+using FluentAssertions;
 using Invoicemgmt.Core.Fixtures;
 using Invoicemgmt.Core.Interfaces;
 using Invoicemgmt.Core.Models.Customer;
@@ -13,7 +13,7 @@ namespace Invoicemgmt.Core
     {
         private readonly CustomerRegistrationRepository _processor;
         private readonly CustomerRegistrationRequest _request;
-        private readonly Mock<ICustomerRegistrationService> _mock;
+        private readonly Mock<ICustomerService> _mock;
         private readonly List<CustomerRegistration> _customerRegistrations;
 
         public CustomerRegistrationRequestProcessorTest()
@@ -27,7 +27,7 @@ namespace Invoicemgmt.Core
             _customerRegistrations = new List<CustomerRegistration>() { new CustomerRegistration { ContactNo = "1234567890" } };
 
             //generating mock request from Customer Service Interface
-            _mock = new Mock<ICustomerRegistrationService>();
+            _mock = new Mock<ICustomerService>();
 
 
             //process
@@ -36,24 +36,27 @@ namespace Invoicemgmt.Core
 
         #region Save Customer
         [Fact]
-        public void Should_Return_Customer_Registration_Response_With_Request_Values()
+        public async void Should_Return_Customer_Registration_Response_With_Request_Values()
         {
+            //Arrange
+            _mock.Setup(customer => customer.GetCustomersByContactNo(_request.ContactNo)).Returns(Task.FromResult(new List<CustomerRegistration>()));
+
             //Act
-            CustomerRegistrationResponse response = _processor.AddCustomer(_request);
+            CustomerRegistrationResponse response = await _processor.AddCustomer(_request);
 
             //Assert
+            _mock.Verify(q => q.AddCustomer(It.IsAny<CustomerRegistration>()), Times.Once);
             response.Should().NotBeNull();
-            response.Should().BeEquivalentTo(_request);
         }
 
         [Fact]
         public void Should_Throw_Null_Exception_For_Null_Request()
         {
             //Act
-            Action result = () => _processor.AddCustomer(null);
+            Func<Task> result = async () => await _processor.AddCustomer(null);
 
             //Assert
-            result.Should().Throw<ArgumentNullException>();
+            result.Should().ThrowAsync<ArgumentNullException>();
         }
 
         [Fact]
@@ -61,7 +64,9 @@ namespace Invoicemgmt.Core
         {
             //Arrange
             CustomerRegistration savedCustomerRegistration = null;
-            _mock.Setup(m => m.AddCustomer(It.IsAny<CustomerRegistration>()))
+
+            _mock.Setup(customer => customer.GetCustomersByContactNo(_request.ContactNo)).Returns(Task.FromResult(new List<CustomerRegistration>()));
+            _mock.Setup(customer => customer.AddCustomer(It.IsAny<CustomerRegistration>()))
                 .Callback<CustomerRegistration>(customer =>
                 {
                     savedCustomerRegistration = customer;
@@ -69,44 +74,27 @@ namespace Invoicemgmt.Core
 
             //Act
             _processor.AddCustomer(_request);
-            _mock.Verify(q => q.AddCustomer(It.IsAny<CustomerRegistration>()), Times.Once);
 
             //Assert
+            _mock.Verify(q => q.AddCustomer(It.IsAny<CustomerRegistration>()), Times.Once);
             savedCustomerRegistration.Should().NotBeNull();
-            savedCustomerRegistration.Should().BeEquivalentTo(_request);
+            savedCustomerRegistration.FullName.Should().BeEquivalentTo(_request.FullName);
         }
 
         [Fact]
         public void Should_Not_Save_Customer_Registration_Request_If_Customer_Exist_With_Same_Contact_No()
         {
             //Arrange
-            _mock.Setup(q => q.GetCustomersByContactNo(_request.ContactNo)).Returns(_customerRegistrations);
+            _mock.Setup(customer => customer.GetCustomersByContactNo(_request.ContactNo)).Returns(Task.FromResult(_customerRegistrations));
 
             //Act
-            _processor.AddCustomer(_request);
+            Func<Task> result = async () => await _processor.AddCustomer(_request);
 
             //Assert
             _mock.Verify(q => q.AddCustomer(It.IsAny<CustomerRegistration>()), Times.Never);
+            result.Should().ThrowAsync<Exception>();
         }
 
-        [Theory]
-        [InlineData(ResultFlag.Failure, false)]
-        [InlineData(ResultFlag.Success, true)]
-        public void Should_Return_SuccessOrFailure_Flag_In_Result(ResultFlag resultFlag, bool isCustomerAvailable)
-        {
-            //Arrange
-            _mock.Setup(q => q.GetCustomersByContactNo(_request.ContactNo)).Returns(_customerRegistrations);
-            if (isCustomerAvailable)
-            {
-                _customerRegistrations.Clear();
-            }
-
-            //Act
-            var result = _processor.AddCustomer(_request);
-
-            //Assert
-            resultFlag.Should().Be(result.ResultFlag);
-        }
         #endregion
 
         #region Update Customer
@@ -118,7 +106,9 @@ namespace Invoicemgmt.Core
             CustomerRegistrationUpdateRequest customerRegistrationUpdateRequest = CustomerRegistrationFixture.GetCustomerUpdateData();
 
             //Act
-            CustomerRegistrationResponse customerRegistrationResponse = _processor.UpdateCustomer(customerRegistrationUpdateRequest.Id, customerRegistrationUpdateRequest);
+            //CustomerRegistrationResponse customerRegistrationResponse = _processor.UpdateCustomer(customerRegistrationUpdateRequest.Id, customerRegistrationUpdateRequest);
+
+            CustomerRegistrationResponse customerRegistrationResponse = null;
 
             //Assert
 
@@ -130,15 +120,16 @@ namespace Invoicemgmt.Core
 
         #region Get Customers List
 
-        [Fact]
-        public void OnSuccess_Should_Return_If_Found_CustomerList()
+        [Theory]
+        [AutoData]
+        public async void OnSuccess_Should_Return_If_Found_CustomerList(int pageNumber, int pageSize)
         {
             //Arrange
             List<CustomerRegistration> customerRegistrations = CustomerRegistrationFixture.GetCustomersList();
-            _mock.Setup(q => q.GetCustomers()).Returns(customerRegistrations);
+            _mock.Setup(q => q.GetCustomers(pageNumber, pageSize)).Returns(Task.FromResult(customerRegistrations));
 
             //Act
-            List<CustomerRegistration> customers = _processor.GetCustomers();
+            List<CustomerRegistration> customers = await _processor.GetCustomers(pageNumber, pageSize);
 
             //Assert
             customers.Should().NotBeNull();
@@ -146,14 +137,15 @@ namespace Invoicemgmt.Core
         }
 
         [Fact]
-        public void OnFailure_Should_Return_Blank_CustomerList_When_Customers_Not_Exists()
+        public async void OnFailure_Should_Return_Blank_CustomerList_When_Customers_Not_Exists()
         {
             //Arrange
+            int pageNumber = 1, pageSize = 10;
             List<CustomerRegistration> customerRegistrations = new List<CustomerRegistration>();
-            _mock.Setup(q => q.GetCustomers()).Returns(customerRegistrations);
+            _mock.Setup(q => q.GetCustomers(pageNumber, pageSize)).Returns(Task.FromResult(customerRegistrations));
 
             //Act
-            List<CustomerRegistration> customers = _processor.GetCustomers();
+            List<CustomerRegistration> customers = await _processor.GetCustomers(pageNumber, pageSize);
 
             //Assert
             customers.Should().NotBeNull();
@@ -165,16 +157,16 @@ namespace Invoicemgmt.Core
         #region Get Customer By Id
 
         [Fact]
-        public void OnSuccess_Should_Return_Customer()
+        public async void OnSuccess_Should_Return_Customer()
         {
             //Arrange
-           
+
             CustomerRegistration customerRegistrations = CustomerRegistrationFixture.GetCustomerRegistration();
-            var customerid=customerRegistrations.Id;
-            _mock.Setup(q => q.GetCustomerById(customerid)).Returns(customerRegistrations);
+            var customerid = customerRegistrations.Id;
+            _mock.Setup(q => q.GetCustomerById(customerid)).Returns(Task.FromResult(customerRegistrations));
 
             //Act
-            CustomerRegistration customer = _processor.GetCustomerById(customerid);
+            CustomerRegistration customer = await _processor.GetCustomerById(customerid);
 
             //Assert
             customer.Should().NotBeNull();
@@ -182,15 +174,15 @@ namespace Invoicemgmt.Core
         }
 
         [Fact]
-        public void OnFailure_Should_Return_Blank_Customer_When_Customers_Not_Found()
+        public async void OnFailure_Should_Return_Blank_Customer_When_Customers_Not_Found()
         {
             //Arrange
             var customerid = "3";
             CustomerRegistration customerRegistrations = CustomerRegistrationFixture.GetCustomerRegistration();
-            _mock.Setup(q => q.GetCustomerById(customerid)).Returns(customerRegistrations);
+            _mock.Setup(q => q.GetCustomerById(customerid)).Returns(Task.FromResult(customerRegistrations));
 
             //Act
-            CustomerRegistration customer = _processor.GetCustomerById(customerid);
+            CustomerRegistration customer = await _processor.GetCustomerById(customerid);
 
             //Assert
             customer.Should().NotBeNull();

@@ -17,11 +17,5 @@ namespace Invoicemgmt.Domain.BaseModels
         public string AltContactNo { get; set; }
         public CustomerAddress Address { get; set; }
     }
-    public class CustomerAddress
-    {
-        public string Address { get; set; }
-        public int Pincode { get; set; }
-        public string City { get; set; }
-        public string Country { get; set; }
-    }
+    
 }

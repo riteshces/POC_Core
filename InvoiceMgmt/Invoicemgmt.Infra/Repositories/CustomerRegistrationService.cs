@@ -2,11 +2,12 @@
 using Invoicemgmt.Core.Models.Customer;
 using Invoicemgmt.Domain;
 using Invoicemgmt.Infra.Data;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using MongoDB.Driver;
 
 namespace Invoicemgmt.Infra.Repositories
 {
-    public class CustomerRegistrationService : ICustomerRegistrationService
+    public class CustomerRegistrationService : ICustomerService
     {
         private readonly AppDbContext _appDbContext;
 
@@ -14,29 +15,29 @@ namespace Invoicemgmt.Infra.Repositories
         {
             _appDbContext = appDbContext;
         }
-        public void AddCustomer(CustomerRegistration customerRegistration)
+        public async Task<CustomerRegistration> AddCustomer(CustomerRegistration customerRegistration)
         {
-            _appDbContext.CustomerRegistrations.InsertOne(customerRegistration);
-        }
-
-        public List<CustomerRegistration> GetCustomers()
-        {
-            return _appDbContext.CustomerRegistrations.Find(FilterDefinition<CustomerRegistration>.Empty).ToList();
-        }
-
-        public CustomerRegistration GetCustomerById(string customerId)
-        {
-            var filter = Builders<CustomerRegistration>.Filter.Eq(q => q.Id, customerId);
-            var customerRegistration = _appDbContext.CustomerRegistrations.Find(filter).FirstOrDefault();
+            await _appDbContext.CustomerRegistrations.InsertOneAsync(customerRegistration);
             return customerRegistration;
         }
 
-        public IEnumerable<CustomerRegistration> GetCustomersByContactNo(string contactNo)
+        public async Task<List<CustomerRegistration>> GetCustomers(int pageNumber, int pageSize)
         {
-            var filter = Builders<CustomerRegistration>.Filter.Eq(q=>q.ContactNo,contactNo);
-            var customerRegistrations = _appDbContext.CustomerRegistrations.Find(filter).ToList();
-            return customerRegistrations;
+            return await _appDbContext.CustomerRegistrations.Find(FilterDefinition<CustomerRegistration>.Empty).Skip(pageNumber * pageSize).Limit(pageSize).ToListAsync();
+        }
 
+        public async Task<CustomerRegistration> GetCustomerById(string customerId)
+        {
+            var filter = Builders<CustomerRegistration>.Filter.Eq(customer => customer.Id, customerId);
+            var customerRegistration = await _appDbContext.CustomerRegistrations.FindAsync(filter).Result.FirstOrDefaultAsync();
+            return customerRegistration;
+        }
+
+        public async Task<List<CustomerRegistration>> GetCustomersByContactNo(string contactNo)
+        {
+            var filter = Builders<CustomerRegistration>.Filter.Eq(customer => customer.ContactNo, contactNo);
+            var customerRegistrations = await _appDbContext.CustomerRegistrations.FindAsync(filter).Result.ToListAsync();
+            return customerRegistrations;
         }
 
         public void UpdateCustomer(string id, CustomerRegistrationUpdateRequest customerRegistrationUpdateRequest)
@@ -44,6 +45,6 @@ namespace Invoicemgmt.Infra.Repositories
             throw new NotImplementedException();
         }
 
-        
+
     }
 }

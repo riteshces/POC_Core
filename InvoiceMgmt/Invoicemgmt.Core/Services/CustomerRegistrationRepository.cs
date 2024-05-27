@@ -1,5 +1,4 @@
-﻿using Invoicemgmt.Core.Enums;
-using Invoicemgmt.Core.Interfaces;
+﻿using Invoicemgmt.Core.Interfaces;
 using Invoicemgmt.Core.Models.Customer;
 using Invoicemgmt.Domain;
 using Invoicemgmt.Domain.BaseModels;
@@ -8,44 +7,42 @@ namespace Invoicemgmt.Core.Services
 {
     public class CustomerRegistrationRepository
     {
-        private readonly ICustomerRegistrationService _customerRegistration;
+        private readonly ICustomerService _customerRegistration;
 
-        public CustomerRegistrationRepository(ICustomerRegistrationService customerRegistration)
+        public CustomerRegistrationRepository(ICustomerService customerRegistration)
         {
             _customerRegistration = customerRegistration;
         }
 
-        public CustomerRegistrationResponse AddCustomer(CustomerRegistrationRequest request)
+        public async Task<CustomerRegistrationResponse> AddCustomer(CustomerRegistrationRequest request)
         {
             if (request is null)
             {
                 throw new ArgumentNullException();
             }
 
-            var customers = _customerRegistration.GetCustomersByContactNo(request.ContactNo);
+            var customers = await _customerRegistration.GetCustomersByContactNo(request.ContactNo);
             var result = CreateCustomerRegistrationRequest<CustomerRegistrationResponse>(request);
 
             if (!customers.Any())
             {
-                _customerRegistration.AddCustomer(CreateCustomerRegistrationRequest<CustomerRegistration>(request));
-                result.ResultFlag = ResultFlag.Success;
+                await _customerRegistration.AddCustomer(CreateCustomerRegistrationRequest<CustomerRegistration>(request));
             }
             else
             {
-                result.ResultFlag = ResultFlag.Failure;
+                throw new Exception("Customer already exists with same contact no.");
             }
-
             return result;
         }
 
-        public CustomerRegistration GetCustomerById(string id)
+        public async Task<CustomerRegistration> GetCustomerById(string id)
         {
-            return _customerRegistration.GetCustomerById(id);
+            return await _customerRegistration.GetCustomerById(id);
         }
 
-        public List<CustomerRegistration> GetCustomers()
+        public async Task<List<CustomerRegistration>> GetCustomers(int pageNumber, int pageSize)
         {
-            var customers = _customerRegistration.GetCustomers();
+            var customers = await _customerRegistration.GetCustomers(pageNumber, pageSize);
             if (!customers.Any())
             {
                 return new List<CustomerRegistration>();
@@ -56,7 +53,7 @@ namespace Invoicemgmt.Core.Services
         public CustomerRegistrationResponse UpdateCustomer(string Id, CustomerRegistrationUpdateRequest customerRegistrationUpdateRequest)
         {
             _customerRegistration.UpdateCustomer(Id, customerRegistrationUpdateRequest);
-            var result = UpdateCustomerRegistrationRequest<CustomerRegistrationResponse>(customerRegistrationUpdateRequest);
+            var result = CreateCustomerRegistrationRequest<CustomerRegistrationResponse>(customerRegistrationUpdateRequest);
             return result;
         }
 
@@ -75,25 +72,6 @@ namespace Invoicemgmt.Core.Services
                     City = customerRegistrationBase.Address.City,
                     Country = customerRegistrationBase.Address.Country,
                     Pincode = customerRegistrationBase.Address.Pincode,
-                }
-            };
-        }
-
-
-        private TCustomerRegistration UpdateCustomerRegistrationRequest<TCustomerRegistration>(CustomerRegistrationUpdateRequest customerRegistration) where TCustomerRegistration : CustomerRegistrationResponse, new()
-        {
-            return new TCustomerRegistration
-            {
-                Id = customerRegistration.Id,
-                FullName = customerRegistration.FullName,
-                ContactNo = customerRegistration.ContactNo,
-                AltContactNo = customerRegistration.AltContactNo,
-                Address = new CustomerAddress
-                {
-                    Address = customerRegistration.Address.Address,
-                    City = customerRegistration.Address.City,
-                    Country = customerRegistration.Address.Country,
-                    Pincode = customerRegistration.Address.Pincode,
                 }
             };
         }

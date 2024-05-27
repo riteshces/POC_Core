@@ -18,15 +18,6 @@ namespace Invoicemgmt.Core.Fixtures
         {
             Fixture fixture = new Fixture();
             return fixture.Create<CustomerRegistration>();
-
-            //return new CustomerRegistration
-            //{
-            //    Id="1",
-            //    FullName = "Test",
-            //    ContactNo = "1234567890",
-            //    AltContactNo = "1234567890",
-            //    Address = new CustomerAddress { Address = "testing", City = "test", Country = "test", Pincode = 123456 }
-            //};
         }
 
 
@@ -68,16 +59,6 @@ namespace Invoicemgmt.Core.Fixtures
         {
             Fixture fixture = new Fixture();
             return fixture.Build<CustomerRegistrationUpdateRequest>().With(c => c.Id, "664f28655109e7d5f39ddc5d").Create();
-
-
-            return new CustomerRegistrationUpdateRequest
-            {
-                Id = "664f28655109e7d5f39ddc5d",
-                FullName = "Test",
-                ContactNo = "1234567890",
-                AltContactNo = "1234567890",
-                Address = new CustomerAddress { Address = "testing", City = "test", Country = "test", Pincode = 123456 }
-            };
         }
     }
 }

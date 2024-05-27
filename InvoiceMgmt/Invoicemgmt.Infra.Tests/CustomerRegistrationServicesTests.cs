@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using AutoFixture.Xunit2;
+using FluentAssertions;
 using Invoicemgmt.Domain;
 using Invoicemgmt.Infra.Data;
 using Invoicemgmt.Infra.Repositories;
@@ -18,19 +19,19 @@ namespace Invoicemgmt.Infra.Tests
         }
 
         [Fact]
-        public void Should_Return_Available_Customers_From_Contact_No()
+        public async void Should_Return_Available_Customers_From_Contact_No()
         {
             //Arrange
 
-            var contactNo = "1234567890";
+            var customerRequest = CustomerRegistrationFixture.GetCustomerData();
             using var dbContext = new AppDbContext(_mockClient.Object);
-            dbContext.CustomerRegistrations.DeleteMany(FilterDefinition<CustomerRegistration>.Empty);
-            dbContext.CustomerRegistrations.InsertOne(CustomerRegistrationFixture.GetCustomerData());
+            //dbContext.CustomerRegistrations.DeleteMany(FilterDefinition<CustomerRegistration>.Empty);
+            dbContext.CustomerRegistrations.InsertOne(customerRequest);
             CustomerRegistrationService customerRegistrationService = new CustomerRegistrationService(dbContext);
 
             //Act
 
-            var customer = customerRegistrationService.GetCustomersByContactNo(contactNo);
+            var customer = await customerRegistrationService.GetCustomersByContactNo(customerRequest.ContactNo);
 
 
             //Assert
@@ -38,40 +39,35 @@ namespace Invoicemgmt.Infra.Tests
         }
 
         [Fact]
-        public void Should_Save_Customer_Registration()
+        public async void Should_Save_Customer_Registration()
         {
             //Arrange
-
             using var dbContext = new AppDbContext(_mockClient.Object);
-            dbContext.CustomerRegistrations.DeleteMany(FilterDefinition<CustomerRegistration>.Empty);
             CustomerRegistrationService customerRegistrationService = new CustomerRegistrationService(dbContext);
+            var customerData = CustomerRegistrationFixture.GetCustomerData();
 
             //Act
-
-            customerRegistrationService.AddCustomer(CustomerRegistrationFixture.GetCustomerData());
-            var customers = dbContext.CustomerRegistrations.Find(FilterDefinition<CustomerRegistration>.Empty).ToList();
-            var customer = customers.Single();
+            var customer = await customerRegistrationService.AddCustomer(customerData);
 
             //Assert
-
-            customers.Should().ContainSingle();
-            customer.FullName.Should().BeEquivalentTo(CustomerRegistrationFixture.GetCustomerData().FullName);
-            customer.FullName.Should().BeEquivalentTo(CustomerRegistrationFixture.GetCustomerData().FullName);
+            customer.Should().NotBeNull();
+            customer.Id.Should().NotBeNullOrEmpty().And.HaveLength(24);
+            customer.FullName.Should().BeEquivalentTo(customerData.FullName);
         }
 
-        [Fact]
-        public void Should_Return_List_of_Customers()
+        [Theory]
+        [AutoData]
+        public async void Should_Return_List_of_Customers(int pageNumber, int pageSize)
         {
             //Arrange
 
             using var dbContext = new AppDbContext(_mockClient.Object);
-            dbContext.CustomerRegistrations.DeleteMany(FilterDefinition<CustomerRegistration>.Empty);
             dbContext.CustomerRegistrations.InsertOne(CustomerRegistrationFixture.GetCustomerData());
             CustomerRegistrationService customerRegistrationService = new CustomerRegistrationService(dbContext);
 
             //Act
 
-            var customers = customerRegistrationService.GetCustomers();
+            var customers = await customerRegistrationService.GetCustomers(pageNumber,pageSize);
 
             //Assert
             customers.Should().NotBeNull();
@@ -79,22 +75,21 @@ namespace Invoicemgmt.Infra.Tests
         }
 
         [Fact]
-        public void Should_Return_Customer_By_Id()
+        public async void Should_Return_Customer_By_Id()
         {
             //Arrange
-
+            var customerData = CustomerRegistrationFixture.GetCustomerData();
             using var dbContext = new AppDbContext(_mockClient.Object);
-            dbContext.CustomerRegistrations.DeleteMany(FilterDefinition<CustomerRegistration>.Empty);
-            dbContext.CustomerRegistrations.InsertOne(CustomerRegistrationFixture.GetCustomerData());
+            await dbContext.CustomerRegistrations.InsertOneAsync(customerData);
             CustomerRegistrationService customerRegistrationService = new CustomerRegistrationService(dbContext);
 
             //Act
 
-            var customer = customerRegistrationService.GetCustomerById("664f28655109e7d5f39ddc5d");
+            var customer = await customerRegistrationService.GetCustomerById(customerData.Id);
 
             //Assert
             customer.Should().NotBeNull();
-            customer.Id.Should().BeEquivalentTo(CustomerRegistrationFixture.GetCustomerData().Id);
+            customer.Id.Should().BeEquivalentTo(customerData.Id);
         }
     }
 }

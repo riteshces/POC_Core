@@ -7,7 +7,7 @@ namespace Invoicemgmt.Domain
     public class CustomerRegistration:CustomerRegistrationBase
     {
         [BsonId]
-        [BsonElement("_id"), BsonRepresentation(BsonType.ObjectId)]
+        [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
     }
 

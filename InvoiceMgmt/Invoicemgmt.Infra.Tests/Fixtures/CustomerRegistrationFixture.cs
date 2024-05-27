@@ -1,5 +1,8 @@
-﻿using Invoicemgmt.Domain;
+﻿using AutoFixture;
+using Invoicemgmt.Core.Models.Customer;
+using Invoicemgmt.Domain;
 using Invoicemgmt.Domain.BaseModels;
+using MongoDB.Driver.Core.Misc;
 
 namespace Invoicemgmt.Infra.Tests.Fixtures
 {
@@ -7,14 +10,19 @@ namespace Invoicemgmt.Infra.Tests.Fixtures
     {
         public static CustomerRegistration GetCustomerData()
         {
+            Fixture fixture = new Fixture();
             return new CustomerRegistration
             {
-                Id= "664f28655109e7d5f39ddc5d",
-                FullName = "Test",
-                ContactNo = "1234567890",
-                AltContactNo = "1234567890",
-                Address = new CustomerAddress { Address = "testing", City = "test", Country = "test", Pincode = 123456 }
+                //Id = "664f28655109e7d5f39ddc5d",
+                FullName = fixture.Create<string>(),
+                ContactNo = fixture.Create<string>(),
+                AltContactNo = fixture.Create<string>(),
+                Address = new CustomerAddress { Address = fixture.Create<string>(), City = fixture.Create<string>(), Country = fixture.Create<string>(), Pincode = fixture.Create<int>() }
             };
+
+
+           
+            return fixture.Create<CustomerRegistration>();
         }
     }
 }
